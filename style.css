@@ -120,7 +120,7 @@ body {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   transition: transform var(--transition-normal), width var(--transition-normal);
   box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
 }
@@ -421,11 +421,13 @@ body {
 /* --- Page/Section Manager --- */
 .page-section {
   display: none;
-  animation: pageIn var(--transition-slow) forwards;
+  opacity: 0;
+  transform: translateY(25px);
 }
 
 .page-section.active {
   display: block;
+  animation: pageIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* --- Section 1: About Me (Мен Жайлы) --- */
@@ -571,11 +573,29 @@ body {
   padding: 10px 16px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-fast);
+}
+
+a.meta-item {
+  text-decoration: none !important;
+  color: inherit !important;
+  cursor: pointer !important;
 }
 
 [data-theme="dark"] .meta-item {
   background: rgba(255, 255, 255, 0.02);
   border-color: rgba(255, 255, 255, 0.04);
+}
+
+a.meta-item:hover {
+  border-color: var(--accent-color);
+  background: rgba(0, 102, 204, 0.05);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] a.meta-item:hover {
+  background: rgba(59, 130, 246, 0.08);
 }
 
 .meta-icon {
@@ -2210,7 +2230,7 @@ body {
   border: 1px solid var(--border-glass);
   color: var(--text-primary);
   box-shadow: var(--shadow-md);
-  z-index: 999;
+  z-index: 1100;
   cursor: pointer;
   align-items: center;
   justify-content: center;
@@ -2226,5 +2246,31 @@ body {
 @media (max-width: 1120px) {
   .floating-mobile-toggle {
     display: flex;
+  }
+}
+
+/* --- Scroll Reveal Animations --- */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Games Section Custom Responsive Grid --- */
+.oyyndar-grid {
+  display: grid;
+  grid-template-columns: 3fr 1.6fr;
+  gap: 30px;
+}
+
+@media (max-width: 1120px) {
+  .oyyndar-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -8,6 +8,24 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   
+  // --- Auto-inject Scroll Reveal Classes ---
+  const autoRevealSelectors = [
+    '.hero-wrapper',
+    '.panel-card',
+    '.cert-card',
+    '.task-card',
+    '.course-item-card',
+    '.comic-iframe-container',
+    '.section-intro-bar'
+  ];
+  
+  autoRevealSelectors.forEach(selector => {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(el => {
+      el.classList.add('reveal-on-scroll');
+    });
+  });
+
   // --- Theme Toggle Manager ---
   const themeToggle = document.getElementById('themeToggle');
   const currentTheme = localStorage.getItem('theme') || 'light';
@@ -41,15 +59,26 @@ document.addEventListener('DOMContentLoaded', () => {
   drawerOverlay.className = 'task-drawer-overlay';
   document.body.appendChild(drawerOverlay);
 
-  mobileMenuToggle.addEventListener('click', () => {
-    sidebar.classList.add('active');
-    drawerOverlay.classList.add('active');
+  mobileMenuToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isActive = sidebar.classList.contains('active');
+    if (isActive) {
+      sidebar.classList.remove('active');
+      drawerOverlay.classList.remove('active');
+    } else {
+      sidebar.classList.add('active');
+      drawerOverlay.classList.add('active');
+    }
   });
 
   drawerOverlay.addEventListener('click', () => {
     sidebar.classList.remove('active');
     drawerOverlay.classList.remove('active');
-    document.getElementById('taskDrawer').classList.remove('active');
+    
+    const taskDrawer = document.getElementById('taskDrawer');
+    if (taskDrawer) {
+      taskDrawer.classList.remove('active');
+    }
   });
 
   // --- SPA Custom Router ---
@@ -70,6 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
         sec.classList.remove('active');
         if (sec.id === targetId) {
           sec.classList.add('active');
+          
+          // Re-trigger scroll reveal animations for elements inside the active section!
+          const activeSectionReveals = sec.querySelectorAll('.reveal-on-scroll');
+          activeSectionReveals.forEach(el => {
+            el.classList.remove('revealed');
+            setTimeout(() => {
+              el.classList.add('revealed');
+            }, 50);
+          });
         }
       });
       
@@ -517,7 +555,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateComicViewer();
   }
+  // --- Scroll Reveal Manager (Intersection Observer) ---
+  const revealElements = document.querySelectorAll('.reveal-on-scroll');
+  
+  if (revealElements.length > 0) {
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+    
+    revealElements.forEach(el => revealObserver.observe(el));
+  }
 
+  // --- Email & Instagram Interaction capture for mobile/desktop reliability ---
+  const emailCard = document.getElementById('email-card');
+  const instagramCard = document.getElementById('instagram-card');
 
+  if (emailCard) {
+    emailCard.addEventListener('click', () => {
+      console.log('Email card clicked, opening mail composer for nazerkedauletzhan@gmail.com');
+    });
+  }
+
+  if (instagramCard) {
+    instagramCard.addEventListener('click', () => {
+      console.log('Instagram card clicked, redirecting to instagram profile @_qqqqweertyy_');
+    });
+  }
 
 });
